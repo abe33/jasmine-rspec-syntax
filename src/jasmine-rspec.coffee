@@ -23,17 +23,18 @@ let_ = given = (name, block) =>
   afterEach ->
     delete @[name]
 
+expect_its = expectIts = (thing, f) ->
   it "its #{thing} should ...", ->
     f.call expect(eval("subject.#{thing}"))
 
-expect_it = (f) ->
+expect_it = expectIt = (f) ->
   it "should ...", ->
     f.call expect(subject)
 
-shared_examples_for = (name, f) ->
+shared_examples_for = sharedExamplesFor = (name, f) ->
   shared_examples[name] = f
 
-it_should_behave_like = (name, g) ->
+it_should_behave_like = itShouldBehaveLike = (name, g) ->
   f = shared_examples[name]
   f?()
   g?()
@@ -138,7 +139,7 @@ matcher = (f) ->
         ret
     )
 
-respond_to = matcher (name) ->
+respond_to = respondTo = matcher (name) ->
   @description -> "respond to .#{name}()"
   @matches -> typeof(@actual[name]) == 'function'
   @message -> "Expected it to #{@description()}"
@@ -152,11 +153,11 @@ have = matcher (number, collection) ->
     else
       @actual.length == number
 
-be_null = matcher ->
+be_null = beNull = matcher ->
   @description -> "be null"
   @matches -> @actual == null
 
-be_empty = matcher ->
+be_empty = beEmpty = matcher ->
   @description -> "be empty"
   @matches ->
     for own x,y of @actual
@@ -171,11 +172,11 @@ equal = matcher (expected) ->
   @description -> "equal #{JSON.stringify(expected)}"
   @matches -> jasmine.getEnv().equals_(@actual, expected)
 
-be_true = matcher ->
+be_true = beTrue = matcher ->
   @description -> "be true"
   @matches -> @actual == true
 
-be_false = matcher ->
+be_false = beFalse = matcher ->
   @description -> "be false"
   @matches -> @actual == false
 
@@ -183,17 +184,17 @@ include = matcher (item) ->
   @description -> "include #{item}"
   @matches -> @actual.indexOf(item) != -1
 
-be_greater_than = matcher (value) ->
+be_greater_than = beGreaterThan = matcher (value) ->
   @description -> "be greater than #{value}"
   @matches -> @actual > value
   @reverse -> @description -> "be less than or equal to #{value}"
 
-be_less_than = matcher (value) ->
+be_less_than = beLessThan = matcher (value) ->
   @description -> "be less than #{value}"
   @matches -> @actual < value
   @reverse -> @description -> "be greater than or equal to #{value}"
 
-be_called = matcher ->
+be_called = beCalled = matcher ->
   @description -> "have been called"
   @matches -> @actual.wasCalled
 
@@ -202,7 +203,7 @@ propagate = matcher ->
     @description -> "not propagate"
     @matches -> @actual.stopPropagation.wasCalled
 
-be_within = (tol) ->
+be_within = beWithin = (tol) ->
   of: matcher (expected) ->
     @helpers ->
       diff: ->
@@ -218,7 +219,7 @@ be_within = (tol) ->
       @description -> "be outside #{tol} of #{expected}"
       @message -> "Expected #{@actual} to be outside #{tol} of #{expected}, but was within #{@diff()}"
 
-have_query_string = matcher (query) ->
+have_query_string = haveQueryString = matcher (query) ->
   @helpers ->
     query_part: -> @actual.split('?')[1]
   @description -> "have query string '#{query}'"
@@ -228,14 +229,14 @@ be = matcher (name) ->
   @description -> "be #{name}"
   @matches -> eval "this.actual.is_#{name}()"
 
-have_table_data = matcher (data) ->
+have_table_data = haveTableData = matcher (data) ->
   @description -> "have tabular data"
   @matches ->
     real = for own tr in @actual.find('tr')
       $(td).text() for own td in $(tr).find('td,th')
     jasmine.getEnv().equals_(real, data)
 
-have_css_class = matcher (name) ->
+have_css_class = haveCSSClass = matcher (name) ->
   @description -> "have css class '#{name}'"
   @matches -> @actual.hasClass(name)
   @message -> "Expected node to have css class '#{name}'"
@@ -247,12 +248,12 @@ select = matcher (count, selector) ->
   @matches -> @actual_count() == count
   @message -> "Expected node to select #{count} elements with '#{selector}', actually selected #{@actual_count()}"
 
-contain_text = matcher (text) ->
+contain_text = containText = matcher (text) ->
   @description -> "contain text #{text}"
   @message -> "Expected node to contain text '#{text}', was '#{@actual.text()}'"
   @matches -> @actual.text().strip() == text
 
-match_object = matcher (object) ->
+match_object = matchObject = matcher (object) ->
   @description -> "match #{JSON.stringify(object)}"
   @matches ->
     for own key, value of object
