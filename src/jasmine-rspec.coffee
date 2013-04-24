@@ -1,5 +1,5 @@
 subject = null
-shared_examples = {}
+shared_examples = sharedExamples = {}
 context = describe
 before = beforeEach
 after = afterEach
@@ -54,6 +54,7 @@ jit = it
 dummy_subject =
   should: (matcher) -> matcher
   should_not: (matcher) -> matcher.reverse
+  shouldNot: (matcher) -> matcher.reverse
 
 it_ = (f) ->
   jit "", ->
@@ -227,7 +228,8 @@ have_query_string = haveQueryString = matcher (query) ->
 
 be = matcher (name) ->
   @description -> "be #{name}"
-  @matches -> eval "this.actual.is_#{name}()"
+  @matches ->
+    @actual["is_#{name}"]?() or @actual["is#{name}"]?()
 
 have_table_data = haveTableData = matcher (data) ->
   @description -> "have tabular data"
