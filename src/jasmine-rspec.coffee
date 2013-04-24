@@ -6,13 +6,23 @@ after = afterEach
 
 xthe = xit
 
-subject = (f) ->
-  before -> subject = f()
+subject = (name, block) ->
+  [name, block] = [block, name] if typeof name is 'function'
+  beforeEach ->
+    @subject = block.call this
+    @[name] = @subject if name?
 
-let_ = (name, f) =>
-  before => this[name] = f()
+let_ = given = (name, block) =>
 
-expect_its = (thing, f) ->
+  beforeEach ->
+    self = this
+    Object.defineProperty this, name,
+                          configurable: true,
+                          enumerable: true,
+                          get: -> self["__#{name}"] ?= block.call self
+  afterEach ->
+    delete @[name]
+
   it "its #{thing} should ...", ->
     f.call expect(eval("subject.#{thing}"))
 
